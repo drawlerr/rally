@@ -181,8 +181,12 @@ class DockerLauncher:
                 telemetry.DiskIo(self.metrics_store, len(node_configurations)),
                 telemetry.NodeEnvironmentInfo(self.metrics_store)
             ]
+
             t = telemetry.Telemetry(devices=node_telemetry)
-            nodes.append(cluster.Node(0, host_name, node_name, t))
+            node = cluster.Node(0, host_name, node_name, t)
+            self.logger.info("Attaching telemetry devices to node [%s].", node_name)
+            t.attach_to_node(node)
+            nodes.append(node)
         return nodes
 
     def _start_process(self, binary_path):
