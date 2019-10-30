@@ -110,7 +110,7 @@ def is_rally_process(p):
 
 def find_all_other_rally_processes():
     others = []
-    for_all_other_processes(is_rally_process, lambda p: others.append(p))
+    for_all_other_processes(is_rally_process, others.append)
     return others
 
 
@@ -120,7 +120,7 @@ def kill_all(predicate):
         p.kill()
         # wait until process has terminated, at most 3 seconds. Otherwise we might run into race conditions with actor system
         # sockets that are still open.
-        for i in range(3):
+        for _ in range(3):
             try:
                 p.status()
                 time.sleep(1)

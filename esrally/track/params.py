@@ -32,22 +32,22 @@ __PARAM_SOURCES_BY_OP = {}
 __PARAM_SOURCES_BY_NAME = {}
 
 
-def param_source_for_operation(op_type, track, params):
+def param_source_for_operation(op_type, track_name, params):
     try:
         # we know that this can only be a Rally core parameter source
-        return __PARAM_SOURCES_BY_OP[op_type](track, params)
+        return __PARAM_SOURCES_BY_OP[op_type](track_name, params)
     except KeyError:
-        return ParamSource(track, params)
+        return ParamSource(track_name, params)
 
 
-def param_source_for_name(name, track, params):
+def param_source_for_name(name, track_name, params):
     param_source = __PARAM_SOURCES_BY_NAME[name]
 
     # we'd rather use callable() but this will erroneously also classify a class as callable...
     if isinstance(param_source, types.FunctionType):
-        return DelegatingParamSource(track, params, param_source)
+        return DelegatingParamSource(track_name, params, param_source)
     else:
-        return param_source(track, params)
+        return param_source(track_name, params)
 
 
 def register_param_source_for_operation(op_type, param_source_class):
@@ -73,14 +73,14 @@ class ParamSource:
      before Rally invokes the corresponding runner (that will actually execute the operation against Elasticsearch).
     """
 
-    def __init__(self, track, params, **kwargs):
+    def __init__(self, track_name, params, **kwargs):
         """
         Creates a new ParamSource instance.
 
         :param track:  The current track definition
         :param params: A hash of all parameters that have been extracted for this operation.
         """
-        self.track = track
+        self.track = track_name
         self._params = params
         self.kwargs = kwargs
 
@@ -423,8 +423,8 @@ class IndexIdConflict(Enum):
 
     Note that this assumes that each document in the benchmark corpus has an id between [1, size_of(corpus)]
     """
-    NoConflicts = 0,
-    SequentialConflicts = 1,
+    NoConflicts = 0
+    SequentialConflicts = 1
     RandomConflicts = 2
 
 
@@ -646,7 +646,7 @@ def create_readers(num_clients, client_index, corpora, batch_size, bulk_size, id
                                                  docs.includes_action_and_meta_data)
             if num_docs > 0:
                 logger.info("Task-relative client at index [%d] will bulk index [%d] docs starting from line offset [%d] for [%s/%s] "
-                            "from corpus [%s]." % (client_index, num_docs, offset, docs.target_index, docs.target_type, corpus.name))
+                            "from corpus [%s].", client_index, num_docs, offset, docs.target_index, docs.target_type, corpus.name)
                 readers.append(create_reader(docs, offset, num_lines, num_docs, batch_size, bulk_size, id_conflicts, conflict_probability,
                                              on_conflict, recency))
             else:
@@ -738,15 +738,15 @@ class GenerateActionMetaData:
     def __init__(self, index_name, type_name, conflicting_ids=None, conflict_probability=None, on_conflict=None,
                  recency=None, rand=random.random, randint=random.randint, randexp=random.expovariate):
         if type_name:
-            self.meta_data_index_with_id = '{"index": {"_index": "%s", "_type": "%s", "_id": "%s"}}' % \
+            self.meta_data_index_with_id = """{"index": {"_index": "%s", "_type": "%s", "_id": "%s"}}""" % \
                                            (index_name, type_name, "%s")
-            self.meta_data_update_with_id = '{"update": {"_index": "%s", "_type": "%s", "_id": "%s"}}' % \
+            self.meta_data_update_with_id = """{"update": {"_index": "%s", "_type": "%s", "_id": "%s"}}""" % \
                                             (index_name, type_name, "%s")
-            self.meta_data_index_no_id = '{"index": {"_index": "%s", "_type": "%s"}}' % (index_name, type_name)
+            self.meta_data_index_no_id = """{"index": {"_index": "%s", "_type": "%s"}}""" % (index_name, type_name)
         else:
-            self.meta_data_index_with_id = '{"index": {"_index": "%s", "_id": "%s"}}' % (index_name, "%s")
-            self.meta_data_update_with_id = '{"update": {"_index": "%s", "_id": "%s"}}' % (index_name, "%s")
-            self.meta_data_index_no_id = '{"index": {"_index": "%s"}}' % index_name
+            self.meta_data_index_with_id = """{"index": {"_index": "%s", "_id": "%s"}}""" % (index_name, "%s")
+            self.meta_data_update_with_id = """{"update": {"_index": "%s", "_id": "%s"}}""" % (index_name, "%s")
+            self.meta_data_index_no_id = """{"index": {"_index": "%s"}}""" % index_name
 
         self.conflicting_ids = conflicting_ids
         self.on_conflict = on_conflict
@@ -867,7 +867,7 @@ class IndexDataReader:
         self.type_name = type_name
 
     def __enter__(self):
-        self.file_source.open(self.data_file, 'rt')
+        self.file_source.open(self.data_file, "rt")
         return self
 
     def __iter__(self):

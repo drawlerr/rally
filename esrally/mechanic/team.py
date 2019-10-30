@@ -509,4 +509,4 @@ class BootstrapHookHandler:
                 hook(config_names=self.component.config, **kwargs)
         else:
             self.logger.debug("Component [%s] in config [%s] has no hook registered for phase [%s].",
-                         self.component.name, self.component.config, phase)
+                              self.component.name, self.component.config, phase)

@@ -67,11 +67,11 @@ class EsClient:
     def template_exists(self, name):
         return self.guarded(self._client.indices.exists_template, name)
 
-    def delete_template(self,  name):
+    def delete_template(self, name):
         self.guarded(self._client.indices.delete_template, name)
 
     def get_index(self, name):
-        return self.guarded(self._client.indices.get,  name)
+        return self.guarded(self._client.indices.get, name)
 
     def create_index(self, index):
         # ignore 400 cause by IndexAlreadyExistsException when creating an index
@@ -1079,7 +1079,7 @@ class InMemoryMetricsStore(MetricsStore):
             self.docs = []
         compressed = zlib.compress(pickle.dumps(docs))
         self.logger.debug("Compression changed size of metric store from [%d] bytes to [%d] bytes",
-                         sys.getsizeof(docs, -1), sys.getsizeof(compressed, -1))
+                          sys.getsizeof(docs, -1), sys.getsizeof(compressed, -1))
         return compressed
 
     def get_percentiles(self, name, task=None, operation_type=None, sample_type=None, percentiles=None):
@@ -1192,19 +1192,20 @@ def results_store(cfg):
 def list_races(cfg):
     def format_dict(d):
         if d:
-            items=sorted(d.items())
+            items = sorted(d.items())
             return ", ".join(["%s=%s" % (k, v) for k, v in items])
         else:
             return None
 
     races = []
     for race in race_store(cfg).list():
-        races.append([race.race_id, time.to_iso8601(race.race_timestamp), race.track, format_dict(race.track_params), race.challenge_name, race.car_name,
-                      format_dict(race.user_tags), race.track_revision, race.team_revision])
+        races.append([race.race_id, time.to_iso8601(race.race_timestamp), race.track, format_dict(race.track_params), race.challenge_name,
+                      race.car_name, format_dict(race.user_tags), race.track_revision, race.team_revision])
 
     if len(races) > 0:
         console.println("\nRecent races:\n")
-        console.println(tabulate.tabulate(races, headers=["Race ID", "Race Timestamp", "Track", "Track Parameters", "Challenge", "Car", "User Tags", "Track Revision", "Team Revision"]))
+        console.println(tabulate.tabulate(races, headers=["Race ID", "Race Timestamp", "Track", "Track Parameters", "Challenge", "Car",
+                                                          "User Tags", "Track Revision", "Team Revision"]))
     else:
         console.println("")
         console.println("No recent races found.")
@@ -1522,16 +1523,16 @@ class EsRaceStore(RaceStore):
 
     def find_by_race_id(self, race_id):
         filters = [{
-                "term": {
+            "term": {
                     "environment": self.environment_name
-                }
-            },
-            {
-                "term": {
-                    # TODO #777: Switch to "race-id" once we remove the trial-id parameter
-                    "trial-id": race_id
-                }
-            }]
+            }
+        },
+        {
+            "term": {
+                # TODO #777: Switch to "race-id" once we remove the trial-id parameter
+                "trial-id": race_id
+            }
+        }]
 
         query = {
             "query": {

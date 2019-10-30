@@ -49,7 +49,7 @@ def create_arg_parser():
                                      description=BANNER + "\n\n You Know, for Benchmarking Elasticsearch.",
                                      epilog="Find out more about Rally at {}".format(console.format.link(doc_link())),
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--version', action='version', version="%(prog)s " + version.version())
+    parser.add_argument("--version", action="version", version="%(prog)s " + version.version())
 
     subparsers = parser.add_subparsers(
         title="subcommands",
@@ -389,13 +389,13 @@ def ensure_configuration_present(cfg, args, sub_command):
         config.ConfigFactory().create_config(cfg.config_file,
                                              advanced_config=args.advanced_config,
                                              assume_defaults=args.assume_defaults)
-        exit(0)
+        sys.exit(0)
     else:
         if cfg.config_present():
             cfg.load_config(auto_upgrade=True)
         else:
             console.error("No config present. Please run '%s configure' first." % PROGRAM_NAME)
-            exit(64)
+            sys.exit(64)
 
 
 def dispatch_list(cfg):
@@ -435,7 +435,7 @@ def race(cfg):
               "the same time. Please check and terminate these processes and retry again." % pids
         raise exceptions.RallyError(msg)
 
-    with_actor_system(lambda c: racecontrol.run(c), cfg)
+    with_actor_system(racecontrol.run, cfg)
 
 
 def with_actor_system(runnable, cfg):
@@ -501,7 +501,8 @@ def with_actor_system(runnable, cfg):
                 console.println(SKULL)
                 console.println("")
             elif not shutdown_complete:
-                console.warn("Could not terminate all internal processes within timeout. Please check and force-terminate all Rally processes.")
+                console.warn("Could not terminate all internal processes within timeout. Please check and "
+                             "force-terminate all Rally processes.")
 
 
 def generate(cfg):
@@ -611,7 +612,7 @@ def main():
 
     cfg.add(config.Scope.applicationOverride, "race", "pipeline", args.pipeline)
     cfg.add(config.Scope.applicationOverride, "race", "user.tag", args.user_tag)
-    
+
     cfg.add(config.Scope.applicationOverride, "track", "repository.revision", args.track_revision)
 
     # We can assume here that if a track-path is given, the user did not specify a repository either (although argparse sets it to
@@ -651,7 +652,7 @@ def main():
         if args.chart_spec_path and (args.track or args.challenge or args.car or args.node_count):
             console.println("You need to specify either --chart-spec-path or --track, --challenge, --car and "
                             "--node-count but not both.")
-            exit(1)
+            sys.exit(1)
         if args.chart_spec_path:
             cfg.add(config.Scope.applicationOverride, "generator", "chart.spec.path", args.chart_spec_path)
         else:
@@ -668,10 +669,10 @@ def main():
         client_options = opts.ClientOptions(args.client_options, target_hosts=target_hosts)
         cfg.add(config.Scope.applicationOverride, "client", "options", client_options)
         if "timeout" not in client_options.default:
-           console.info("You did not provide an explicit timeout in the client options. Assuming default of 10 seconds.")
+            console.info("You did not provide an explicit timeout in the client options. Assuming default of 10 seconds.")
         if list(target_hosts.all_hosts) != list(client_options.all_client_options):
             console.println("--target-hosts and --client-options must define the same keys for multi cluster setups.")
-            exit(1)
+            sys.exit(1)
     # split by component?
     if sub_command == "list":
         cfg.add(config.Scope.applicationOverride, "system", "list.config.option", args.configuration)

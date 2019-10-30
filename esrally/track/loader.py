@@ -320,7 +320,7 @@ class DocumentSetPreparator:
         if uncompressed_size:
             console.info("Decompressing track data from [%s] to [%s] (resulting size: %.2f GB) ... " %
                          (archive_path, documents_path, convert.bytes_to_gb(uncompressed_size)),
-                         end='', flush=True, logger=self.logger)
+                         end="", flush=True, logger=self.logger)
         else:
             console.info("Decompressing track data from [%s] to [%s] ... " % (archive_path, documents_path), end='',
                          flush=True, logger=self.logger)
@@ -414,7 +414,7 @@ class DocumentSetPreparator:
             if self.is_locally_available(doc_path) and \
                     self.has_expected_size(doc_path, document_set.uncompressed_size_in_bytes):
                 break
-            elif document_set.has_compressed_corpus() and \
+            if document_set.has_compressed_corpus() and \
                     self.is_locally_available(archive_path) and \
                     self.has_expected_size(archive_path, document_set.compressed_size_in_bytes):
                 self.decompress(archive_path, doc_path, document_set.uncompressed_size_in_bytes)

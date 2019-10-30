@@ -80,13 +80,13 @@ class Pipeline:
 
 
 class Setup:
-    def __init__(self, cfg, sources=False, build=False, distribution=False, external=False, docker=False):
+    def __init__(self, cfg, sources=False, build=False, distribution=False, external=False, use_docker=False):
         self.cfg = cfg
         self.sources = sources
         self.build = build
         self.distribution = distribution
         self.external = external
-        self.docker = docker
+        self.docker = use_docker
 
 
 class Success:
@@ -197,7 +197,7 @@ class BenchmarkActor(actor.RallyActor):
             distribution_version = mechanic.cluster_distribution_version(self.cfg)
             self.logger.info("Automatically derived distribution version [%s]", distribution_version)
             self.cfg.add(config.Scope.benchmark, "mechanic", "distribution.version", distribution_version)
-        
+
         t = track.load_track(self.cfg)
         self.track_revision = self.cfg.opts("track", "repository.revision", mandatory=False)
         challenge_name = self.cfg.opts("track", "challenge.name")
@@ -267,7 +267,7 @@ def set_default_hosts(cfg, host="127.0.0.1", port=9200):
         logger.info("Using configured hosts %s", configured_hosts.default)
     else:
         logger.info("Setting default host to [%s:%d]", host, port)
-        default_host_object = opts.TargetHosts("{}:{}".format(host,port))
+        default_host_object = opts.TargetHosts("{}:{}".format(host, port))
         cfg.add(config.Scope.benchmark, "client", "hosts", default_host_object)
 
 

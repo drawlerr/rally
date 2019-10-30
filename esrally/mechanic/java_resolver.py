@@ -38,6 +38,6 @@ def java_home(car, cfg):
 
     runtime_jdk_versions = determine_runtime_jdks(car)
     logger.info("Allowed JDK versions are %s.", runtime_jdk_versions)
-    major, java_home = jvm.resolve_path(runtime_jdk_versions)
-    logger.info("Detected JDK with major version [%s] in [%s].", major, java_home)
-    return major, java_home
+    major, home = jvm.resolve_path(runtime_jdk_versions)
+    logger.info("Detected JDK with major version [%s] in [%s].", major, home)
+    return major, home

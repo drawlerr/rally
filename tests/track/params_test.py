@@ -49,16 +49,16 @@ class SliceTests(TestCase):
     def test_slice_with_source_larger_than_slice(self):
         source = params.Slice(io.StringAsFileSource, 2, 5)
         data = [
-            '{"key": "value1"}',
-            '{"key": "value2"}',
-            '{"key": "value3"}',
-            '{"key": "value4"}',
-            '{"key": "value5"}',
-            '{"key": "value6"}',
-            '{"key": "value7"}',
-            '{"key": "value8"}',
-            '{"key": "value9"}',
-            '{"key": "value10"}'
+            "{\"key\": \"value1\"}",
+            "{\"key\": \"value2\"}",
+            "{\"key\": \"value3\"}",
+            "{\"key\": \"value4\"}",
+            "{\"key\": \"value5\"}",
+            "{\"key\": \"value6\"}",
+            "{\"key\": \"value7\"}",
+            "{\"key\": \"value8\"}",
+            "{\"key\": \"value9\"}",
+            "{\"key\": \"value10\"}"
         ]
 
         source.open(data, "r")
@@ -68,9 +68,9 @@ class SliceTests(TestCase):
     def test_slice_with_slice_larger_than_source(self):
         source = params.Slice(io.StringAsFileSource, 0, 5)
         data = [
-            '{"key": "value1"}',
-            '{"key": "value2"}',
-            '{"key": "value3"}',
+            "{\"key\": \"value1\"}",
+            "{\"key\": \"value2\"}",
+            "{\"key\": \"value3\"}",
         ]
 
         source.open(data, "r")
@@ -577,18 +577,18 @@ class InvocationGeneratorTests(TestCase):
         self.assertEqual((0, 1000, 1000), params.bounds(1000, 0, 1, includes_action_and_meta_data=False))
         self.assertEqual((0, 1000, 2000), params.bounds(1000, 0, 1, includes_action_and_meta_data=True))
 
-        self.assertEqual((  0, 500, 500), params.bounds(1000, 0, 2, includes_action_and_meta_data=False))
+        self.assertEqual((0, 500, 500), params.bounds(1000, 0, 2, includes_action_and_meta_data=False))
         self.assertEqual((500, 500, 500), params.bounds(1000, 1, 2, includes_action_and_meta_data=False))
 
-        self.assertEqual((   0, 200, 400), params.bounds(800, 0, 4, includes_action_and_meta_data=True))
-        self.assertEqual(( 400, 200, 400), params.bounds(800, 1, 4, includes_action_and_meta_data=True))
-        self.assertEqual(( 800, 200, 400), params.bounds(800, 2, 4, includes_action_and_meta_data=True))
+        self.assertEqual((0, 200, 400), params.bounds(800, 0, 4, includes_action_and_meta_data=True))
+        self.assertEqual((400, 200, 400), params.bounds(800, 1, 4, includes_action_and_meta_data=True))
+        self.assertEqual((800, 200, 400), params.bounds(800, 2, 4, includes_action_and_meta_data=True))
         self.assertEqual((1200, 200, 400), params.bounds(800, 3, 4, includes_action_and_meta_data=True))
 
-        self.assertEqual((   0, 250, 250), params.bounds(2000, 0, 8, includes_action_and_meta_data=False))
-        self.assertEqual(( 250, 250, 250), params.bounds(2000, 1, 8, includes_action_and_meta_data=False))
-        self.assertEqual(( 500, 250, 250), params.bounds(2000, 2, 8, includes_action_and_meta_data=False))
-        self.assertEqual(( 750, 250, 250), params.bounds(2000, 3, 8, includes_action_and_meta_data=False))
+        self.assertEqual((0, 250, 250), params.bounds(2000, 0, 8, includes_action_and_meta_data=False))
+        self.assertEqual((250, 250, 250), params.bounds(2000, 1, 8, includes_action_and_meta_data=False))
+        self.assertEqual((500, 250, 250), params.bounds(2000, 2, 8, includes_action_and_meta_data=False))
+        self.assertEqual((750, 250, 250), params.bounds(2000, 3, 8, includes_action_and_meta_data=False))
         self.assertEqual((1000, 250, 250), params.bounds(2000, 4, 8, includes_action_and_meta_data=False))
         self.assertEqual((1250, 250, 250), params.bounds(2000, 5, 8, includes_action_and_meta_data=False))
         self.assertEqual((1500, 250, 250), params.bounds(2000, 6, 8, includes_action_and_meta_data=False))
@@ -597,14 +597,14 @@ class InvocationGeneratorTests(TestCase):
     def test_calculate_non_multiple_bounds(self):
         # in this test case, each client would need to read 1333.3333 lines. Instead we let most clients read 1333
         # lines and every third client, one line more (1334).
-        self.assertEqual((    0, 1333, 1333), params.bounds(16000,  0, 12, includes_action_and_meta_data=False))
-        self.assertEqual(( 1333, 1334, 1334), params.bounds(16000,  1, 12, includes_action_and_meta_data=False))
-        self.assertEqual(( 2667, 1333, 1333), params.bounds(16000,  2, 12, includes_action_and_meta_data=False))
-        self.assertEqual(( 4000, 1333, 1333), params.bounds(16000,  3, 12, includes_action_and_meta_data=False))
-        self.assertEqual(( 5333, 1334, 1334), params.bounds(16000,  4, 12, includes_action_and_meta_data=False))
-        self.assertEqual(( 6667, 1333, 1333), params.bounds(16000,  5, 12, includes_action_and_meta_data=False))
-        self.assertEqual(( 8000, 1333, 1333), params.bounds(16000,  6, 12, includes_action_and_meta_data=False))
-        self.assertEqual(( 9333, 1334, 1334), params.bounds(16000,  7, 12, includes_action_and_meta_data=False))
+        self.assertEqual((0, 1333, 1333), params.bounds(16000,  0, 12, includes_action_and_meta_data=False))
+        self.assertEqual((1333, 1334, 1334), params.bounds(16000,  1, 12, includes_action_and_meta_data=False))
+        self.assertEqual((2667, 1333, 1333), params.bounds(16000,  2, 12, includes_action_and_meta_data=False))
+        self.assertEqual((4000, 1333, 1333), params.bounds(16000,  3, 12, includes_action_and_meta_data=False))
+        self.assertEqual((5333, 1334, 1334), params.bounds(16000,  4, 12, includes_action_and_meta_data=False))
+        self.assertEqual((6667, 1333, 1333), params.bounds(16000,  5, 12, includes_action_and_meta_data=False))
+        self.assertEqual((8000, 1333, 1333), params.bounds(16000,  6, 12, includes_action_and_meta_data=False))
+        self.assertEqual((9333, 1334, 1334), params.bounds(16000,  7, 12, includes_action_and_meta_data=False))
         self.assertEqual((10667, 1333, 1333), params.bounds(16000,  8, 12, includes_action_and_meta_data=False))
         self.assertEqual((12000, 1333, 1333), params.bounds(16000,  9, 12, includes_action_and_meta_data=False))
         self.assertEqual((13333, 1334, 1334), params.bounds(16000, 10, 12, includes_action_and_meta_data=False))

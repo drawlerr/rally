@@ -28,6 +28,7 @@ class EsClientFactory:
     """
     Abstracts how the Elasticsearch client is created. Intended for testing.
     """
+
     def __init__(self, hosts, client_options):
         self.hosts = hosts
         self.client_options = dict(client_options)
@@ -49,7 +50,8 @@ class EsClientFactory:
 
             # ssl.Purpose.CLIENT_AUTH allows presenting client certs and can only be enabled during instantiation
             # but can be disabled via the verify_mode property later on.
-            self.ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH, cafile=self.client_options.pop("ca_certs", certifi.where()))
+            self.ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH,
+                                                          cafile=self.client_options.pop("ca_certs", certifi.where()))
 
             if not self.client_options.pop("verify_certs", True):
                 self.logger.info("SSL certificate verification: off")
@@ -64,7 +66,7 @@ class EsClientFactory:
                 # advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings"
                 urllib3.disable_warnings()
             else:
-                self.ssl_context.verify_mode=ssl.CERT_REQUIRED
+                self.ssl_context.verify_mode = ssl.CERT_REQUIRED
                 self.ssl_context.check_hostname = True
                 self.logger.info("SSL certificate verification: on")
 
@@ -111,7 +113,7 @@ class EsClientFactory:
             self.client_options["http_compress"] = self.client_options.pop("compressed")
 
         if self._is_set(self.client_options, "http_compress"):
-                self.logger.info("HTTP compression: on")
+            self.logger.info("HTTP compression: on")
         else:
             self.logger.info("HTTP compression: off")
 

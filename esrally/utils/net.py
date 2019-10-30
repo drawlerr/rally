@@ -23,6 +23,7 @@ import certifi
 import urllib3
 
 from esrally import exceptions
+from esrally.utils import console, convert
 
 __HTTP = None
 
@@ -47,7 +48,6 @@ def init():
 
 class Progress:
     def __init__(self, msg, accuracy=0):
-        from esrally.utils import console
         self.p = console.progress()
         # if we don't show a decimal sign, the maximum width is 3 (max value is 100 (%)). Else its 3 + 1 (for the decimal point)
         # the accuracy that the user requested.
@@ -57,7 +57,6 @@ class Progress:
         self.msg = msg
 
     def __call__(self, bytes_read, bytes_total):
-        from esrally.utils import convert
         completed = bytes_read / bytes_total
         total_as_mb = convert.bytes_to_human_string(bytes_total)
         self.p.print("%s (%s total size)" % (self.msg, total_as_mb), self.percent_format % (completed * 100))
@@ -192,7 +191,7 @@ def resolve(hostname_or_ip):
 
     import socket
     addrinfo = socket.getaddrinfo(hostname_or_ip, 22, 0, 0, socket.IPPROTO_TCP)
-    for family, socktype, proto, canonname, sockaddr in addrinfo:
+    for family, _, _, _, sockaddr in addrinfo:
         # we're interested in the IPv4 address
         if family == socket.AddressFamily.AF_INET:
             ip, _ = sockaddr

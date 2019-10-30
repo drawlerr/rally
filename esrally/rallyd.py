@@ -77,7 +77,7 @@ def main():
                                      description=BANNER + "\n\n Rally daemon to support remote benchmarks",
                                      epilog="Find out more about Rally at {}".format(console.format.link(doc_link())),
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--version', action='version', version="%(prog)s " + version.version())
+    parser.add_argument("--version", action="version", version="%(prog)s " + version.version())
 
     subparsers = parser.add_subparsers(
         title="subcommands",
@@ -115,5 +115,5 @@ def main():
         raise exceptions.RallyError("Unknown subcommand [%s]" % args.subcommand)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

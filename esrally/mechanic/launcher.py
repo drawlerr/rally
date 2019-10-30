@@ -36,7 +36,7 @@ def _get_container_id(compose_config):
 
 
 def _wait_for_healthy_running_container(container_id, timeout=60):
-    cmd = 'docker ps -a --filter "id={}" --filter "status=running" --filter "health=healthy" -q'.format(container_id)
+    cmd = "docker ps -a --filter \"id={}\" --filter \"status=running\" --filter \"health=healthy\" -q".format(container_id)
     endtime = _time() + timeout
     while _time() < endtime:
         output = subprocess.check_output(shlex.split(cmd))
@@ -188,7 +188,7 @@ class ProcessLauncher:
         # Don't merge here!
         env["JAVA_HOME"] = java_home
         env["ES_JAVA_OPTS"] = "-XX:+ExitOnOutOfMemoryError"
-        
+
         # we just blindly trust telemetry here...
         for v in t.instrument_candidate_java_opts(car, node_name):
             self._set_env(env, "ES_JAVA_OPTS", v)
@@ -196,14 +196,15 @@ class ProcessLauncher:
         self.logger.debug("env for [%s]: %s", node_name, str(env))
         return env
 
-    def _set_env(self, env, k, v, separator=' ', prepend=False):
+    @staticmethod
+    def _set_env(env, k, v, separator=" ", prepend=False):
         if v is not None:
             if k not in env:
                 env[k] = v
             elif prepend:
-                    env[k] = v + separator + env[k]
+                env[k] = v + separator + env[k]
             else:
-                    env[k] = env[k] + separator + v
+                env[k] = env[k] + separator + v
 
     @staticmethod
     def _start_process(binary_path, env):

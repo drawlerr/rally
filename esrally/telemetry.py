@@ -341,7 +341,7 @@ class CcrStatsRecorder:
         self.cluster_name = cluster_name
         self.client = client
         self.metrics_store = metrics_store
-        self.sample_interval= sample_interval
+        self.sample_interval = sample_interval
         self.indices = indices
         self.logger = logging.getLogger(__name__)
 
@@ -378,8 +378,7 @@ class CcrStatsRecorder:
                 except KeyError:
                     self.logger.warning(
                         "The 'indices' key in {0} does not contain an 'index' or 'shards' key "
-                        "Maybe the output format of the {0} endpoint has changed. Skipping.".format(ccr_stats_api_endpoint)
-                    )
+                        "Maybe the output format of the {0} endpoint has changed. Skipping.", ccr_stats_api_endpoint)
 
     def record_stats_per_index(self, name, stats):
         """
@@ -433,7 +432,7 @@ class RecoveryStats(TelemetryDevice):
         if self.sample_interval <= 0:
             raise exceptions.SystemSetupError(
                 "The telemetry parameter 'recovery-stats-sample-interval' must be greater than zero but was {}."
-                    .format(self.sample_interval))
+                .format(self.sample_interval))
         self.specified_cluster_names = self.clients.keys()
         indices_per_cluster = self.telemetry_params.get("recovery-stats-indices", False)
         # allow the user to specify either an index pattern as string or as a JSON object
@@ -772,8 +771,8 @@ class DiskIo(InternalTelemetryDevice):
                         self.logger.info("There are [%d] nodes on this host and Rally fell back to disk I/O counters. Attributing [1/%d] "
                                          "of total I/O to [%s].", self.node_count_on_host, self.node_count_on_host, self.node_name)
 
-                    read_bytes = (disk_end.read_bytes - io_stats['read_bytes']) // self.node_count_on_host
-                    write_bytes = (disk_end.write_bytes - io_stats['write_bytes']) // self.node_count_on_host
+                    read_bytes = (disk_end.read_bytes - io_stats["read_bytes"]) // self.node_count_on_host
+                    write_bytes = (disk_end.write_bytes - io_stats["write_bytes"]) // self.node_count_on_host
                 else:
                     raise RuntimeError("Neither process nor disk I/O counters are available")
 
@@ -1043,8 +1042,10 @@ class IndexStats(InternalTelemetryDevice):
         for ct in self.index_counts(index_stats):
             self.metrics_store.put_doc(doc=ct, level=metrics.MetaInfoScope.cluster)
 
-        self.add_metrics(self.extract_value(p, ["segments", "doc_values_memory_in_bytes"]), "segments_doc_values_memory_in_bytes", "byte")
-        self.add_metrics(self.extract_value(p, ["segments", "stored_fields_memory_in_bytes"]), "segments_stored_fields_memory_in_bytes", "byte")
+        self.add_metrics(self.extract_value(p, ["segments", "doc_values_memory_in_bytes"]), "segments_doc_values_memory_in_bytes",
+                         "byte")
+        self.add_metrics(self.extract_value(p, ["segments", "stored_fields_memory_in_bytes"]), "segments_stored_fields_memory_in_bytes",
+                         "byte")
         self.add_metrics(self.extract_value(p, ["segments", "terms_memory_in_bytes"]), "segments_terms_memory_in_bytes", "byte")
         self.add_metrics(self.extract_value(p, ["segments", "norms_memory_in_bytes"]), "segments_norms_memory_in_bytes", "byte")
         self.add_metrics(self.extract_value(p, ["segments", "points_memory_in_bytes"]), "segments_points_memory_in_bytes", "byte")

@@ -189,21 +189,22 @@ class AutoLoadConfigTests(TestCase):
         base_cfg.add(config.Scope.application, "unit-test", "sample.property", "let me copy you")
 
         cfg = config.auto_load_local_config(base_cfg, additional_sections=["unit-test"],
-                                            config_file_class=InMemoryConfigStore, present=True, config={
-            "distributions": {
-                "release.url": "https://acme.com/releases",
-                "release.cache": "true",
-            },
-            "system": {
-                "env.name": "existing-unit-test-config"
-            },
-            "meta": {
-                "config.version": config.Config.CURRENT_CONFIG_VERSION
-            },
-            "benchmarks": {
-                "local.dataset.cache": "/tmp/rally/data"
-            }
-        })
+                                            config_file_class=InMemoryConfigStore, present=True, config=
+                                            {
+                                                "distributions": {
+                                                    "release.url": "https://acme.com/releases",
+                                                    "release.cache": "true",
+                                                },
+                                                "system": {
+                                                    "env.name": "existing-unit-test-config"
+                                                },
+                                                "meta": {
+                                                    "config.version": config.Config.CURRENT_CONFIG_VERSION
+                                                },
+                                                "benchmarks": {
+                                                    "local.dataset.cache": "/tmp/rally/data"
+                                                }
+                                            })
         self.assertTrue(cfg.config_file.present)
         # did not just copy base config
         self.assertNotEqual(base_cfg.opts("benchmarks", "local.dataset.cache"), cfg.opts("benchmarks", "local.dataset.cache"))
@@ -219,25 +220,26 @@ class AutoLoadConfigTests(TestCase):
         base_cfg.add(config.Scope.application, "unit-test", "sample.property", "let me copy you")
 
         cfg = config.auto_load_local_config(base_cfg, additional_sections=["unit-test"],
-                                            config_file_class=InMemoryConfigStore, present=True, config={
-                "distributions": {
-                    "release.url": "https://acme.com/releases",
-                    "release.cache": "true",
-                },
-                "system": {
-                    "env.name": "existing-unit-test-config"
-                },
-                # outdated
-                "meta": {
-                    "config.version": config.Config.CURRENT_CONFIG_VERSION - 1
-                },
-                "benchmarks": {
-                    "local.dataset.cache": "/tmp/rally/data"
-                },
-                "runtime": {
-                    "java8.home": "/opt/jdk8"
-                }
-            })
+                                            config_file_class=InMemoryConfigStore, present=True, config=
+                                            {
+                                                "distributions": {
+                                                    "release.url": "https://acme.com/releases",
+                                                    "release.cache": "true",
+                                                },
+                                                "system": {
+                                                    "env.name": "existing-unit-test-config"
+                                                },
+                                                # outdated
+                                                "meta": {
+                                                    "config.version": config.Config.CURRENT_CONFIG_VERSION - 1
+                                                },
+                                                "benchmarks": {
+                                                    "local.dataset.cache": "/tmp/rally/data"
+                                                },
+                                                "runtime": {
+                                                    "java8.home": "/opt/jdk8"
+                                                }
+                                            })
         self.assertTrue(cfg.config_file.present)
         # did not just copy base config
         self.assertNotEqual(base_cfg.opts("benchmarks", "local.dataset.cache"), cfg.opts("benchmarks", "local.dataset.cache"))
@@ -757,12 +759,12 @@ class ConfigMigrationTests(TestCase):
             "  [{} = {}] to [{} = <the full command>]."
             "  Please refer to the documentation for more details:"
             "  {}.\n".format("x-pack",
-                       "in-memory",
-                       "plugin.x-pack.build.task",
-                       ":x-pack-elasticsearch:plugin:assemble",
-                       "plugin.x-pack.build.command",
-                       "https://esrally.readthedocs.io/en/latest/elasticsearch_plugins.html#running-a-benchmark-with-plugins"""
-            ), string_buffer.read())
+                             "in-memory",
+                             "plugin.x-pack.build.task",
+                             ":x-pack-elasticsearch:plugin:assemble",
+                             "plugin.x-pack.build.command",
+                             "https://esrally.readthedocs.io/en/latest/elasticsearch_plugins.html#running-a-benchmark-with-plugins"""
+                             ), string_buffer.read())
 
     def test_migrate_from_15_to_16(self):
         config_file = InMemoryConfigStore("test")
@@ -806,6 +808,3 @@ class ConfigMigrationTests(TestCase):
         self.assertEqual("17", config_file.config["meta"]["config.version"])
         self.assertNotIn("runtime", config_file.config)
         self.assertEqual("/home/user/.rally/benchmarks/data", config_file.config["benchmarks"]["local.dataset.cache"])
-
-
-

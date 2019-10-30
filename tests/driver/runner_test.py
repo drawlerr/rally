@@ -20,7 +20,6 @@ import random
 import unittest.mock as mock
 from unittest import TestCase
 
-import elasticsearch
 import pytest
 
 from esrally import exceptions
@@ -328,7 +327,8 @@ class BulkIndexRunnerTests(TestCase):
                         "_type": "doc",
                         "_id": "1",
                         "status": 429,
-                        "error": "EsRejectedExecutionException[rejected execution (queue capacity 50) on org.elasticsearch.action.support.replication.TransportShardReplicationOperationAction$PrimaryPhase$1@1]"
+                        "error": "EsRejectedExecutionException[rejected execution (queue capacity 50) on "
+                                 "org.elasticsearch.action.support.replication.TransportShardReplicationOperationAction$PrimaryPhase$1@1] "
                     }
                 },
                 {
@@ -337,7 +337,8 @@ class BulkIndexRunnerTests(TestCase):
                         "_type": "doc",
                         "_id": "2",
                         "status": 429,
-                        "error": "EsRejectedExecutionException[rejected execution (queue capacity 50) on org.elasticsearch.action.support.replication.TransportShardReplicationOperationAction$PrimaryPhase$1@2]"
+                        "error": "EsRejectedExecutionException[rejected execution (queue capacity 50) on "
+                                 "org.elasticsearch.action.support.replication.TransportShardReplicationOperationAction$PrimaryPhase$1@2] "
                     }
                 },
                 {
@@ -346,7 +347,8 @@ class BulkIndexRunnerTests(TestCase):
                         "_type": "doc",
                         "_id": "3",
                         "status": 429,
-                        "error": "EsRejectedExecutionException[rejected execution (queue capacity 50) on org.elasticsearch.action.support.replication.TransportShardReplicationOperationAction$PrimaryPhase$1@3]"
+                        "error": "EsRejectedExecutionException[rejected execution (queue capacity 50) on "
+                                 "org.elasticsearch.action.support.replication.TransportShardReplicationOperationAction$PrimaryPhase$1@3] "
                     }
                 }
             ]
@@ -492,7 +494,6 @@ class BulkIndexRunnerTests(TestCase):
         es.bulk.return_value.pop("ingest_took")
         result = bulk(es, bulk_params)
         self.assertNotIn("ingest_took", result)
-
 
     @mock.patch("elasticsearch.Elasticsearch")
     def test_mixed_bulk_with_detailed_stats(self, es):
@@ -712,6 +713,7 @@ class ForceMergeRunnerTests(TestCase):
 
     @mock.patch("elasticsearch.Elasticsearch")
     def test_optimize_with_defaults(self, es):
+        import elasticsearch
         es.indices.forcemerge.side_effect = elasticsearch.TransportError(400, "Bad Request")
 
         force_merge = runner.ForceMerge()
@@ -721,6 +723,7 @@ class ForceMergeRunnerTests(TestCase):
 
     @mock.patch("elasticsearch.Elasticsearch")
     def test_optimize_with_params(self, es):
+        import elasticsearch
         es.indices.forcemerge.side_effect = elasticsearch.TransportError(400, "Bad Request")
         force_merge = runner.ForceMerge()
         force_merge(es, params={"max-num-segments": 3, "request-timeout": 17000})
@@ -1754,12 +1757,13 @@ class CreateMlDatafeedTests(TestCase):
 
     @mock.patch("elasticsearch.Elasticsearch")
     def test_create_ml_datafeed_fallback(self, es):
+        import elasticsearch
         es.xpack.ml.put_datafeed.side_effect = elasticsearch.TransportError(400, "Bad Request")
         datafeed_id = "some-data-feed"
         body = {
-                "job_id": "total-requests",
-                "indices": ["server-metrics"]
-            }
+            "job_id": "total-requests",
+            "indices": ["server-metrics"]
+        }
         params = {
             "datafeed-id": datafeed_id,
             "body": body
@@ -1789,6 +1793,7 @@ class DeleteMlDatafeedTests(TestCase):
 
     @mock.patch("elasticsearch.Elasticsearch")
     def test_delete_ml_datafeed_fallback(self, es):
+        import elasticsearch
         es.xpack.ml.delete_datafeed.side_effect = elasticsearch.TransportError(400, "Bad Request")
         datafeed_id = "some-data-feed"
         params = {
@@ -1824,10 +1829,11 @@ class StartMlDatafeedTests(TestCase):
 
     @mock.patch("elasticsearch.Elasticsearch")
     def test_start_ml_datafeed_with_body_fallback(self, es):
+        import elasticsearch
         es.xpack.ml.start_datafeed.side_effect = elasticsearch.TransportError(400, "Bad Request")
         body = {
-                "end": "now"
-            }
+            "end": "now"
+        }
         params = {
             "datafeed-id": "some-data-feed",
             "body": body
@@ -1881,6 +1887,7 @@ class StopMlDatafeedTests:
     @mock.patch("elasticsearch.Elasticsearch")
     @pytest.mark.parametrize("seed", range(20))
     def test_stop_ml_datafeed_fallback(self, es, seed):
+        import elasticsearch
         random.seed(seed)
         es.xpack.ml.stop_datafeed.side_effect = elasticsearch.TransportError(400, "Bad Request")
         params = {
@@ -1928,24 +1935,25 @@ class CreateMlJobTests(TestCase):
 
     @mock.patch("elasticsearch.Elasticsearch")
     def test_create_ml_job_fallback(self, es):
+        import elasticsearch
         es.xpack.ml.put_job.side_effect = elasticsearch.TransportError(400, "Bad Request")
         body = {
-                "description": "Total sum of requests",
-                "analysis_config": {
-                    "bucket_span": "10m",
-                    "detectors": [
-                        {
-                            "detector_description": "Sum of total",
-                            "function": "sum",
-                            "field_name": "total"
-                        }
-                    ]
-                },
-                "data_description": {
-                    "time_field": "timestamp",
-                    "time_format": "epoch_ms"
-                }
+            "description": "Total sum of requests",
+            "analysis_config": {
+                "bucket_span": "10m",
+                "detectors": [
+                    {
+                        "detector_description": "Sum of total",
+                        "function": "sum",
+                        "field_name": "total"
+                    }
+                ]
+            },
+            "data_description": {
+                "time_field": "timestamp",
+                "time_format": "epoch_ms"
             }
+        }
         params = {
             "job-id": "an-ml-job",
             "body": body
@@ -1975,6 +1983,7 @@ class DeleteMlJobTests(TestCase):
 
     @mock.patch("elasticsearch.Elasticsearch")
     def test_delete_ml_job_fallback(self, es):
+        import elasticsearch
         es.xpack.ml.delete_job.side_effect = elasticsearch.TransportError(400, "Bad Request")
 
         job_id = "an-ml-job"
@@ -2005,6 +2014,7 @@ class OpenMlJobTests(TestCase):
 
     @mock.patch("elasticsearch.Elasticsearch")
     def test_open_ml_job_fallback(self, es):
+        import elasticsearch
         es.xpack.ml.open_job.side_effect = elasticsearch.TransportError(400, "Bad Request")
 
         job_id = "an-ml-job"
@@ -2039,6 +2049,7 @@ class CloseMlJobTests:
     @mock.patch("elasticsearch.Elasticsearch")
     @pytest.mark.parametrize("seed", range(20))
     def test_close_ml_job_fallback(self, es, seed):
+        import elasticsearch
         random.seed(seed)
         es.xpack.ml.close_job.side_effect = elasticsearch.TransportError(400, "Bad Request")
 
@@ -2593,8 +2604,7 @@ class RetryTests(TestCase):
             connection_error,
             connection_error,
             failed_return_value,
-            success_return_value]
-        )
+            success_return_value])
         es = None
         params = {
             # we try exactly as often as there are errors to also test the semantics of "retry".

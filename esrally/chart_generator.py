@@ -75,11 +75,11 @@ class BarCharts:
     @staticmethod
     def filter_string(environment, race_config):
         if race_config.name:
-            return 'environment:"{}" AND active:true AND user-tags.name:"{}"'.format(
+            return """environment:"{}" AND active:true AND user-tags.name:"{}""""".format(
                 environment,
                 race_config.name)
         else:
-            return 'environment:"{}" AND active:true AND track:"{}" AND challenge:"{}" AND car:"{}" AND node-count:{}'.format(
+            return """environment:"{}" AND active:true AND track:"{}" AND challenge:"{}" AND car:"{}" AND node-count:{}""".format(
                 environment,
                 race_config.track,
                 race_config.challenge,
@@ -804,14 +804,14 @@ class TimeSeriesCharts:
         nightly_extra_filter = ""
         if race_config.es_license:
             # Time series charts need to support different licenses and produce customized titles.
-            nightly_extra_filter = ' AND user-tags.license:"{}"'.format(race_config.es_license)
+            nightly_extra_filter = """ AND user-tags.license:"{}""""".format(race_config.es_license)
         if race_config.name:
-            return 'environment:"{}" AND active:true AND user-tags.name:"{}"{}'.format(
+            return """environment:"{}" AND active:true AND user-tags.name:"{}"{}""".format(
                 environment,
                 race_config.name,
                 nightly_extra_filter)
         else:
-            return 'environment:"{}" AND active:true AND track:"{}" AND challenge:"{}" AND car:"{}" AND node-count:{}'.format(
+            return """environment:"{}" AND active:true AND track:"{}" AND challenge:"{}" AND car:"{}" AND node-count:{}""".format(
                 environment,
                 race_config.track,
                 race_config.challenge,
@@ -1370,15 +1370,17 @@ class RaceConfigTrack:
     def __init__(self, cfg, name=None):
         self.cached_track = self.load_track(cfg, name)
 
-    def load_track(self, cfg, name=None, params={}):
+    def load_track(self, cfg, name=None, params=None):
         # hack to make this work with multiple tracks (Rally core is usually not meant to be used this way)
         if name:
             cfg.add(config.Scope.applicationOverride, "track", "track.name", name)
+        if params is None:
+            params = {}
         # another hack to ensure any track-params in the race config are used by Rally's track loader
         cfg.add(config.Scope.applicationOverride, "track", "params", params)
         return track.load_track(cfg)
 
-    def get_track(self, cfg, name=None, params={}):
+    def get_track(self, cfg, name=None, params=None):
         if params:
             return self.load_track(cfg, name, params)
         # if no params specified, return the initially cached, (non-parametrized) track
@@ -1579,7 +1581,7 @@ def load_race_configs(cfg, chart_type, chart_spec_path=None):
         configs_per_lic = []
         for race_config in race_configs_per_lic:
             configs_per_lic.append(
-                RaceConfig(track=race_config_track.get_track(cfg, item["track"], race_config.get("track-params", {})),
+                RaceConfig(track=race_config_track.get_track(cfg, race_config.get("track"), race_config.get("track-params", {})),
                            cfg=race_config,
                            flavor=flavor_name,
                            es_license=lic)
@@ -1597,8 +1599,6 @@ def load_race_configs(cfg, chart_type, chart_spec_path=None):
                 race_configs_per_track.extend(add_configs(lic_config["configurations"], flavor_name, lic_config["name"]))
 
     if chart_spec_path:
-        import json
-
         race_configs = {"oss": [], "default": []}
         if chart_type == BarCharts:
             race_configs = []
@@ -1630,7 +1630,7 @@ def load_race_configs(cfg, chart_type, chart_spec_path=None):
                            car=car_name,
                            node_count=cfg.opts("generator", "node.count"),
                            charts=["indexing", "query", "gc", "io"])
-             ]
+            ]
         ]
     return race_configs
 

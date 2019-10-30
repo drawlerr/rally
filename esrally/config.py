@@ -24,7 +24,7 @@ import shutil
 from enum import Enum
 
 from esrally import PROGRAM_NAME, doc_link, exceptions
-from esrally.utils import io, git, console, convert
+from esrally.utils import io, git, console, convert, jvm
 
 
 class ConfigError(exceptions.RallyError):
@@ -538,7 +538,6 @@ def migrate(config_file, current_version, target_version, out=print, i=input):
         # the current configuration allows to benchmark from sources
         if "build" in config and "gradle.bin" in config["build"]:
             java_9_home = io.guess_java_home(major_version=9)
-            from esrally.utils import jvm
             if java_9_home and not jvm.is_early_access_release(java_9_home):
                 logger.debug("Autodetected a JDK 9 installation at [%s]", java_9_home)
                 if "runtime" not in config:
@@ -576,7 +575,6 @@ def migrate(config_file, current_version, target_version, out=print, i=input):
         # This version replaced java9.home with java10.home
         if "build" in config and "gradle.bin" in config["build"]:
             java_10_home = io.guess_java_home(major_version=10)
-            from esrally.utils import jvm
             if java_10_home and not jvm.is_early_access_release(java_10_home):
                 logger.debug("Autodetected a JDK 10 installation at [%s]", java_10_home)
                 if "runtime" not in config:
@@ -618,8 +616,8 @@ def migrate(config_file, current_version, target_version, out=print, i=input):
             if "source" not in config:
                 return
             for k, v in config["source"].items():
-                plugin_match = re.match(r"^plugin\.([^.]+)\.build\.task$",k)
-                if plugin_match != None and len(plugin_match.groups()) > 0 :
+                plugin_match = re.match(r"^plugin\.([^.]+)\.build\.task$", k)
+                if plugin_match is not None and len(plugin_match.groups()) > 0:
                     plugin_name = plugin_match.group(1)
                     new_key = "plugin.{}.build.command".format(plugin_name)
                     out("\n"

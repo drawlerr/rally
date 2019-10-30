@@ -109,11 +109,11 @@ def branches(src_dir, remote=True):
     if remote:
         # alternatively: git for-each-ref refs/remotes/ --format='%(refname:short)'
         return _cleanup_remote_branch_names(process.run_subprocess_with_output(
-                "git -C {src} for-each-ref refs/remotes/ --format='%(refname:short)'".format(src=src_dir)))
+            "git -C {src} for-each-ref refs/remotes/ --format='%(refname:short)'".format(src=src_dir)))
     else:
         return _cleanup_local_branch_names(
-                process.run_subprocess_with_output(
-                        "git -C {src} for-each-ref refs/heads/ --format='%(refname:short)'".format(src=src_dir)))
+            process.run_subprocess_with_output(
+                "git -C {src} for-each-ref refs/heads/ --format='%(refname:short)'".format(src=src_dir)))
 
 
 @probed

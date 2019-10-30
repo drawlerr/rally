@@ -420,8 +420,10 @@ def guess_java_home(major_version=8, fallback=None, runner=_run, read_symlink=_r
         # Red Hat based distributions
         #
         # ls -l /etc/alternatives/jre_1.[789].0
-        # lrwxrwxrwx. 1 root root 63 Sep 10 13:57 /etc/alternatives/jre_1.8.0 -> /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.144-5.b01.fc25.x86_64/jre
-        # lrwxrwxrwx. 1 root root 51 Sep 13 15:04 /etc/alternatives/jre_1.9.0 -> /usr/lib/jvm/java-9-openjdk-9.0.0.163-1.fc25.x86_64        #
+        # lrwxrwxrwx. 1 root root 63 Sep 10 13:57 /etc/alternatives/jre_1.8.0 ->
+        #   /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.144-5.b01.fc25.x86_64/jre
+        # lrwxrwxrwx. 1 root root 51 Sep 13 15:04 /etc/alternatives/jre_1.9.0 ->
+        #   /usr/lib/jvm/java-9-openjdk-9.0.0.163-1.fc25.x86_64
         #
         # We could also use the output of "alternatives --display java" on Red Hat but the output is so
         # verbose that it's easier to use the links.

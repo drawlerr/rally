@@ -144,7 +144,7 @@ def _supply_requirements(sources, distribution, build, plugins, revisions, distr
                 # * --pipeline=from-sources-skip-build --distribution-version=X.Y.Z where the plugin should not be built but ES should be
                 #   a distributed version.
                 # * --distribution-version=X.Y.Z --revision="my-plugin:abcdef" where the plugin should be built from sources.
-                plugin_needs_build = (sources and build) or distribution
+                plugin_needs_build = build if sources else distribution
                 # be a bit more lenient when checking for plugin revisions. This allows users to specify `--revision="current"` and
                 # rely on Rally to do the right thing.
                 try:
@@ -155,8 +155,8 @@ def _supply_requirements(sources, distribution, build, plugins, revisions, distr
                     if not plugin_revision or SourceRepository.is_commit_hash(plugin_revision):
                         raise exceptions.SystemSetupError("No revision specified for plugin [%s]." % plugin.name)
                     else:
-                        logging.getLogger(__name__).info("Revision for [%s] is not explicitly defined. Using catch-all revision [%s]."
-                                    % (plugin.name, plugin_revision))
+                        logging.getLogger(__name__).info("Revision for [%s] is not explicitly defined. Using catch-all revision [%s].",
+                                                         plugin.name, plugin_revision)
                 supply_requirements[plugin.name] = ("source", plugin_revision, plugin_needs_build)
             else:
                 supply_requirements[plugin.name] = (distribution, _required_version(distribution_version), False)
@@ -179,18 +179,15 @@ class CompositeSupplier:
 
     def __call__(self, *args, **kwargs):
         binaries = {}
-        try:
-            for supplier in self.suppliers:
-                supplier.fetch()
+        for supplier in self.suppliers:
+            supplier.fetch()
 
-            for supplier in self.suppliers:
-                supplier.prepare()
+        for supplier in self.suppliers:
+            supplier.prepare()
 
-            for supplier in self.suppliers:
-                supplier.add(binaries)
-            return binaries
-        except BaseException:
-            raise
+        for supplier in self.suppliers:
+            supplier.add(binaries)
+        return binaries
 
 
 class ElasticsearchSourceSupplier:
@@ -537,7 +534,6 @@ class DistributionRepository:
         for key, replacement in substitutions.items():
             r = r.replace(key, replacement)
         return r
-
 
     @property
     def cache(self):
