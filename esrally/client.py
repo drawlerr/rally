@@ -21,6 +21,7 @@ import certifi
 import urllib3
 
 from esrally import exceptions, doc_link
+from esrally.exceptions import SystemSetupError
 from esrally.utils import console
 
 
@@ -103,15 +104,35 @@ class EsClientFactory:
         if self._is_set(self.client_options, "basic_auth_user") and self._is_set(self.client_options, "basic_auth_password"):
             self.logger.info("HTTP basic authentication: on")
             self.client_options["http_auth"] = (self.client_options.pop("basic_auth_user"), self.client_options.pop("basic_auth_password"))
+        elif "aws_profile" in self.client_options:
+            self.logger.info("AWS authentication: on")
+            import boto3
+            from requests_aws4auth import AWS4Auth
+            from elasticsearch import RequestsHttpConnection
+
+            aws_profile = self.client_options.pop("aws_profile")
+            session = boto3.Session(profile_name=aws_profile)
+            credentials = session.get_credentials()
+            region_name = session.region_name
+            if not credentials:
+                raise SystemSetupError("Credentials not found for profile {}" % aws_profile)
+            awsauth = AWS4Auth(credentials.access_key,
+                               credentials.secret_key,
+                               region_name,
+                               "es",
+                               session_token=credentials.token)
+
+            self.client_options["http_auth"] = awsauth
+            self.client_options["connection_class"] = RequestsHttpConnection
         else:
-            self.logger.info("HTTP basic authentication: off")
+            self.logger.info("HTTP authentication: off")
 
         if self._is_set(self.client_options, "compressed"):
             console.warn("You set the deprecated client option 'compressed‘. Please use 'http_compress' instead.", logger=self.logger)
             self.client_options["http_compress"] = self.client_options.pop("compressed")
 
         if self._is_set(self.client_options, "http_compress"):
-                self.logger.info("HTTP compression: on")
+            self.logger.info("HTTP compression: on")
         else:
             self.logger.info("HTTP compression: off")
 
