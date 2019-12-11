@@ -441,10 +441,11 @@ class OperationType(Enum):
     CreateSnapshotRepository = 1020
     RestoreSnapshot = 1021
     WaitForRecovery = 1022
+    PutSettings = 1023
 
     @property
     def admin_op(self):
-        return self.value() > 1000
+        return self.value > 1000
 
     @classmethod
     def from_hyphenated_string(cls, v):
@@ -503,8 +504,9 @@ class OperationType(Enum):
             r = OperationType.RestoreSnapshot
         elif v == "wait-for-recovery":
             r = OperationType.WaitForRecovery
-
-        if r is None:
+        elif v == "put-settings":
+            r = OperationType.PutSettings
+        else:
             raise KeyError("No enum value for [%s]" % v)
         return r
 
